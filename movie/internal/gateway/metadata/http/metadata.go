@@ -3,25 +3,39 @@ package http
 import (
 	model "awesomeProject/metadata/pkg"
 	"awesomeProject/movie/internal/gateway"
+	"awesomeProject/pkg/discovery"
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
+	"math/rand"
 	"net/http"
 )
 
 // gateway defines a movie metadata HTTP gateway
 type Gateway struct {
-	addr string
+	registry discovery.Registry
 }
 
 // New creates a new HTTP gateway for a mvovie metadata service
-func New(addr string) *Gateway {
-	return &Gateway{addr}
+func New(registry discovery.Registry) *Gateway {
+	return &Gateway{registry}
 }
 
 // get gets the movie metadata by the movie ID
 func (g *Gateway) Get(ctx context.Context, id string) (*model.Metadata, error) {
-	req, err := http.NewRequest(http.MethodGet, g.addr+"/metadata", nil)
+
+	// changing the get method to get the service address
+	addrs, err := g.registry.ServiceAddresses(ctx, "metadata")
+	if err != nil {
+		return nil, err
+	}
+
+	url := "http://" + addrs[rand.Intn(len(addrs))] + "/metadata"
+
+	log.Printf("calling metadata service. Request GET: %s", url)
+
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
