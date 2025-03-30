@@ -54,7 +54,7 @@ func main() {
 	h := httphandler.New(ctrl)
 
 	http.Handle("/metadata", http.HandlerFunc(h.GetMetadata))
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", port), nil); err != nil {
 		panic(err)
 	}
 }
