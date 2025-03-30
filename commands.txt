@@ -1,1 +1,2 @@
 docker run -d --name=consul-server -e CONSUL_BIND_INTERFACE=eth0 -p 8500:8500 -p 8600:8600/udp hashicorp/consul
+protoc -I=api --go_out=. movie.proto
